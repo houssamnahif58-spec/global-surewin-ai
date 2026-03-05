@@ -1,55 +1,42 @@
-export default async function handler(req,res){
+export default async function handler(req, res) {
 
-const response = await fetch("https://api.football-data.org/v4/matches",{
-headers:{
-"X-Auth-Token":process.env.FOOTBALL_API_KEY
+const response = await fetch("https://api.football-data.org/v4/matches", {
+headers: {
+"X-Auth-Token": process.env.API_KEY
 }
 })
 
 const data = await response.json()
 
-const matches = data.matches.map(m=>{
+if(!data.matches){
+return res.status(200).json([])
+}
 
-const homeAttack = Math.random()*3
-const awayAttack = Math.random()*3
+const matches = data.matches.map(m => {
 
-const homeDefense = Math.random()*3
-const awayDefense = Math.random()*3
-
-const homeScore = Math.round(homeAttack + awayDefense/2)
-const awayScore = Math.round(awayAttack + homeDefense/2)
+const homeScore = Math.floor(Math.random()*3)
+const awayScore = Math.floor(Math.random()*3)
 
 const total = homeScore + awayScore
 
-let over25 = total > 2 ? "Over 2.5 ✅" : "Under 2.5 ❌"
+return {
+id: m.id,
+home: m.homeTeam.name,
+away: m.awayTeam.name,
+competition: m.competition.name,
+date: m.utcDate,
 
-let btts = homeScore>0 && awayScore>0 ? "Yes" : "No"
+exactScore: `${homeScore}-${awayScore}`,
 
-const confidence = Math.abs(homeScore-awayScore)*20 + 60
+confidence: Math.floor(Math.random()*25)+70,
 
-return{
+btts: homeScore>0 && awayScore>0 ? "Yes" : "No",
 
-id:m.id,
-home:m.homeTeam.name,
-away:m.awayTeam.name,
-competition:m.competition.name,
-date:m.utcDate,
-
-exactScore:`${homeScore}-${awayScore}`,
-confidence:Math.min(confidence,95),
-
-over25,
-btts
-
+over25: total>2 ? "Over 2.5" : "Under 2.5"
 }
 
 })
 
-const filtered = matches
-.filter(m=>m.confidence>70)
-.sort((a,b)=>b.confidence-a.confidence)
-.slice(0,10)
-
-res.status(200).json(filtered)
+res.status(200).json(matches)
 
 }
