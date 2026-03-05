@@ -1,37 +1,32 @@
-async function loadMatches() {
-  const res = await fetch("/api/matches");
-  const data = await res.json();
+import Link from "next/link"
 
-  const container = document.getElementById("matches");
-  container.innerHTML = "";
+export default function Home() {
 
-  data.forEach(match => {
+  return (
 
-    const home = match.homeTeam?.name || "Home Team";
-    const away = match.awayTeam?.name || "Away Team";
+    <div style={{textAlign:"center",padding:"40px",fontFamily:"Arial"}}>
 
-    const homeGoals = Math.floor(Math.random()*3);
-    const awayGoals = Math.floor(Math.random()*3);
+      <h1>🔥 SUPER AI Football Predictions</h1>
 
-    const confidence = Math.floor(85 + Math.random()*10);
+      <p>Best Exact Score Predictions From AI</p>
 
-    const card = document.createElement("div");
-    card.className = "match-card";
+      <br/>
 
-    card.innerHTML = `
-      <h2>⚽ ${home} VS ${away}</h2>
+      <Link href="/match">
+        <button style={{
+          padding:"15px 30px",
+          fontSize:"18px",
+          background:"black",
+          color:"white",
+          borderRadius:"10px",
+          border:"none"
+        }}>
+          View Predictions
+        </button>
+      </Link>
 
-      <p>🏆 League: ${match.competition?.name || "League"}</p>
+    </div>
 
-      <p>🎯 Exact Score: ${homeGoals}-${awayGoals}</p>
+  )
 
-      <p>⭐ Confidence: ${confidence}%</p>
-
-      <p>⚽ BTTS: ${homeGoals > 0 && awayGoals > 0 ? "YES" : "NO"}</p>
-    `;
-
-    container.appendChild(card);
-  });
 }
-
-loadMatches();
