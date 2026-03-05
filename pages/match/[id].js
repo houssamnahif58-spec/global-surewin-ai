@@ -1,81 +1,99 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 
 export default function MatchPage() {
-  const router = useRouter();
-  const { id } = router.query;
 
-  const [match, setMatch] = useState(null);
-  const [prediction, setPrediction] = useState(null);
+const router = useRouter();
+const { id } = router.query;
 
-  useEffect(() => {
-    if (!id) return;
+const matches = [
+{
+id:1,
+home:"Tottenham Hotspur",
+away:"Crystal Palace",
+league:"Premier League",
+date:"05/03/2026 20:00"
+},
+{
+id:2,
+home:"Barcelona",
+away:"Valencia",
+league:"La Liga",
+date:"06/03/2026 21:00"
+},
+{
+id:3,
+home:"AC Milan",
+away:"Lazio",
+league:"Serie A",
+date:"06/03/2026 19:00"
+}
+];
 
-    fetch("/api/matches")
-      .then((res) => res.json())
-      .then((data) => {
-        const found = data.find((m) => m.id == id);
-        setMatch(found);
+const match = matches.find(m => m.id == id);
 
-        if (found) {
-          const homePower = Math.random() * 3;
-          const awayPower = Math.random() * 3;
+if(!match){
+return <h2>Loading...</h2>
+}
 
-          const homeScore = Math.round(homePower);
-          const awayScore = Math.round(awayPower);
+const homeChance = Math.floor(Math.random()*50)+30;
+const drawChance = Math.floor(Math.random()*20)+10;
+const awayChance = 100 - homeChance - drawChance;
 
-          const winner =
-            homeScore > awayScore
-              ? "🏠 فوز صاحب الأرض"
-              : homeScore < awayScore
-              ? "🚗 فوز الضيف"
-              : "🤝 تعادل";
+const homeScore = Math.floor(Math.random()*3);
+const awayScore = Math.floor(Math.random()*3);
 
-          const over25 =
-            homeScore + awayScore > 2 ? "Over 2.5 ✅" : "Under 2.5 ❌";
+const exactScore = homeScore + " - " + awayScore;
 
-          const btts =
-            homeScore > 0 && awayScore > 0
-              ? "BTTS: Yes ✅"
-              : "BTTS: No ❌";
+let bestBet="";
 
-          setPrediction({
-            winner,
-            exact: `${homeScore} - ${awayScore}`,
-            over25,
-            btts,
-            homeProb: Math.floor((homeScore / 5) * 100),
-            awayProb: Math.floor((awayScore / 5) * 100),
-          });
-        }
-      });
-  }, [id]);
+if(homeChance > awayChance && homeChance > drawChance){
+bestBet="فوز صاحب الأرض";
+}else if(awayChance > homeChance){
+bestBet="فوز الفريق الضيف";
+}else{
+bestBet="تعادل";
+}
 
-  if (!match || !prediction) return <p>Loading...</p>;
+const confidence = Math.floor(Math.random()*25)+75;
 
-  return (
-    <div style={{ padding: 20, fontFamily: "Arial" }}>
-      <h2>
-        {match.home} vs {match.away}
-      </h2>
+let analysis="";
 
-      <p>🏆 {match.competition}</p>
-      <p>📅 {new Date(match.date).toLocaleString()}</p>
+if(homeChance > awayChance){
+analysis="الفريق صاحب الأرض يبدو أقوى حسب الإحصائيات.";
+}else if(awayChance > homeChance){
+analysis="الفريق الضيف قد يفاجئ صاحب الأرض.";
+}else{
+analysis="المباراة متقاربة جداً.";
+}
 
-      <hr />
+return(
 
-      <h3>🔮 التوقع الاحترافي:</h3>
+<div style={{padding:"20px",fontFamily:"Arial"}}>
 
-      <h2>{prediction.winner}</h2>
+<h1>{match.home} vs {match.away}</h1>
 
-      <p>🎯 Exact Score: {prediction.exact}</p>
+<p>🏆 {match.league}</p>
 
-      <p>📊 {prediction.over25}</p>
+<p>📅 {match.date}</p>
 
-      <p>⚽ {prediction.btts}</p>
+<h2>🔮 التوقع</h2>
 
-      <p>📈 نسبة فوز صاحب الأرض: {prediction.homeProb}%</p>
-      <p>📉 نسبة فوز الضيف: {prediction.awayProb}%</p>
-    </div>
-  );
+<h3>🎯 النتيجة المتوقعة: {exactScore}</h3>
+
+<p>📊 فوز صاحب الأرض: {homeChance}%</p>
+
+<p>🤝 تعادل: {drawChance}%</p>
+
+<p>📊 فوز الضيف: {awayChance}%</p>
+
+<p>⭐ نسبة الثقة: {confidence}%</p>
+
+<p>🔥 أفضل رهان: {bestBet}</p>
+
+<p>🧠 التحليل: {analysis}</p>
+
+</div>
+
+)
+
 }
