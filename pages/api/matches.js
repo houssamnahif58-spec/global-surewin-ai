@@ -1,28 +1,27 @@
 export default async function handler(req, res) {
   try {
     const response = await fetch(
-      "https://v3.football.api-sports.io/fixtures?league=39&season=2024",
+      "https://api.football-data.org/v4/matches",
       {
         headers: {
-          "x-apisports-key": process.env.API_KEY,
+          "X-Auth-Token": process.env.API_KEY,
         },
       }
     );
 
     const data = await response.json();
 
-    if (!data.response) {
+    if (!data.matches) {
       return res.status(200).json([]);
     }
 
-    const matches = data.response.slice(0, 20).map((match) => ({
-      id: match.fixture.id,
-      date: match.fixture.date,
-      home: match.teams.home.name,
-      away: match.teams.away.name,
-      league: match.league.name,
-      country: match.league.country,
-      status: match.fixture.status.short,
+    const matches = data.matches.slice(0, 20).map((match) => ({
+      id: match.id,
+      date: match.utcDate,
+      home: match.homeTeam.name,
+      away: match.awayTeam.name,
+      competition: match.competition.name,
+      status: match.status,
     }));
 
     res.status(200).json(matches);
