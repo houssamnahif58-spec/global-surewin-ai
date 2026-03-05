@@ -1,75 +1,75 @@
 import { useEffect, useState } from "react"
 
-export default function Home() {
+export default function MatchPage() {
 
   const [matches,setMatches] = useState([])
 
   useEffect(()=>{
-    loadMatches()
-  },[])
 
-  async function loadMatches(){
+    async function loadMatches(){
 
-    const res = await fetch("/api/matches")
-    const data = await res.json()
+      const res = await fetch("https://api.football-data.org/v4/matches",{
+        headers:{
+          "X-Auth-Token":"dc6d6d91f6a94707b2933c85e95f9bf2"
+        }
+      })
 
-    setMatches(data)
+      const data = await res.json()
 
-  }
+      const list = data.matches.slice(0,10).map(match=>{
 
-  function createPrediction(match){
+        const home = match.homeTeam?.name || "Home Team"
+        const away = match.awayTeam?.name || "Away Team"
 
-    const home = match.homeTeam?.name || match.home_name || match.teams?.home?.name || "Team A"
-    const away = match.awayTeam?.name || match.away_name || match.teams?.away?.name || "Team B"
+        const homeGoals = Math.floor(Math.random()*3)
+        const awayGoals = Math.floor(Math.random()*3)
 
-    const homeGoals = Math.floor(Math.random()*3)
-    const awayGoals = Math.floor(Math.random()*3)
+        const confidence = Math.floor(85 + Math.random()*10)
 
-    const confidence = Math.floor(90 + Math.random()*9)
+        return {
+          home,
+          away,
+          league: match.competition?.name,
+          score: homeGoals+"-"+awayGoals,
+          confidence
+        }
 
-    return {
-      home,
-      away,
-      score:`${homeGoals}-${awayGoals}`,
-      confidence
+      })
+
+      setMatches(list)
+
     }
 
-  }
+    loadMatches()
 
-  return (
+  },[])
+
+  return(
 
     <div style={{padding:"20px",fontFamily:"Arial"}}>
 
       <h1>🔥 Top Exact Score Predictions</h1>
 
-      {matches.map((m,i)=>{
+      {matches.map((m,i)=>(
 
-        const p = createPrediction(m)
+        <div key={i} style={{
+          border:"1px solid #ddd",
+          padding:"20px",
+          marginTop:"20px",
+          borderRadius:"12px"
+        }}>
 
-        return(
+          <h2>⚽ {m.home} VS {m.away}</h2>
 
-          <div key={i} style={{
-            border:"1px solid #ddd",
-            borderRadius:"10px",
-            padding:"15px",
-            marginBottom:"15px"
-          }}>
+          <p>🏆 League: {m.league}</p>
 
-            <h2>⚽ {p.home} VS {p.away}</h2>
+          <p>🎯 Exact Score: {m.score}</p>
 
-            <p>🏆 League: {m.competition?.name || m.league || "League"}</p>
+          <p>⭐ Confidence: {m.confidence}%</p>
 
-            <p>🎯 Exact Score: {p.score}</p>
+        </div>
 
-            <p>⭐ Confidence: {p.confidence}%</p>
-
-            <p>⚽ BTTS: {Math.random()>0.5?"YES":"NO"}</p>
-
-          </div>
-
-        )
-
-      })}
+      ))}
 
     </div>
 
