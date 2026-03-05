@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
     const response = await fetch(
-      "https://v3.football.api-sports.io/fixtures?next=20",
+      "https://v3.football.api-sports.io/fixtures?league=39&season=2024",
       {
         headers: {
           "x-apisports-key": process.env.API_KEY,
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       return res.status(200).json([]);
     }
 
-    const matches = data.response.map((match) => ({
+    const matches = data.response.slice(0, 20).map((match) => ({
       id: match.fixture.id,
       date: match.fixture.date,
       home: match.teams.home.name,
@@ -27,6 +27,6 @@ export default async function handler(req, res) {
 
     res.status(200).json(matches);
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong" });
+    res.status(500).json({ error: "API error" });
   }
 }
