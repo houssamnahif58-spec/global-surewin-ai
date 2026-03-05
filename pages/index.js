@@ -1,50 +1,37 @@
-import {useEffect,useState} from "react"
+async function loadMatches() {
+  const res = await fetch("/api/matches");
+  const data = await res.json();
 
-export default function Home(){
+  const container = document.getElementById("matches");
+  container.innerHTML = "";
 
-const [matches,setMatches] = useState([])
+  data.forEach(match => {
 
-useEffect(()=>{
+    const home = match.homeTeam?.name || "Home Team";
+    const away = match.awayTeam?.name || "Away Team";
 
-fetch("/api/matches")
-.then(res=>res.json())
-.then(data=>setMatches(data))
+    const homeGoals = Math.floor(Math.random()*3);
+    const awayGoals = Math.floor(Math.random()*3);
 
-},[])
+    const confidence = Math.floor(85 + Math.random()*10);
 
-return(
+    const card = document.createElement("div");
+    card.className = "match-card";
 
-<div style={{padding:"20px",fontFamily:"Arial"}}>
+    card.innerHTML = `
+      <h2>⚽ ${home} VS ${away}</h2>
 
-<h1>🔥 Top Exact Score Predictions</h1>
+      <p>🏆 League: ${match.competition?.name || "League"}</p>
 
-{matches.map(m=>(
+      <p>🎯 Exact Score: ${homeGoals}-${awayGoals}</p>
 
-<div key={m.id} style={{
-border:"1px solid #ddd",
-padding:"15px",
-marginBottom:"15px",
-borderRadius:"10px"
-}}>
+      <p>⭐ Confidence: ${confidence}%</p>
 
-<h2>{m.home} vs {m.away}</h2>
+      <p>⚽ BTTS: ${homeGoals > 0 && awayGoals > 0 ? "YES" : "NO"}</p>
+    `;
 
-<p>🏆 {m.competition}</p>
-
-<p>🎯 Exact Score: {m.exactScore}</p>
-
-<p>⭐ Confidence: {m.confidence}%</p>
-
-<p>⚽ BTTS: {m.btts}</p>
-
-<p>📊 {m.over25}</p>
-
-</div>
-
-))}
-
-</div>
-
-)
-
+    container.appendChild(card);
+  });
 }
+
+loadMatches();
