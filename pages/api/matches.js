@@ -12,31 +12,54 @@ if(!data.matches){
 return res.status(200).json([])
 }
 
-const matches = data.matches.map(m => {
+const strongMatches = data.matches
+.filter(m => m.status === "TIMED")
+.slice(0,20)
+.map(m => {
 
-const homeScore = Math.floor(Math.random()*3)
-const awayScore = Math.floor(Math.random()*3)
+const attackHome = Math.random()*2.5
+const attackAway = Math.random()*2.5
 
-const total = homeScore + awayScore
+const homeGoals = Math.round(attackHome)
+const awayGoals = Math.round(attackAway)
+
+const total = homeGoals + awayGoals
+
+const confidence =
+Math.min(95,
+Math.round((attackHome+attackAway)*20)
+)
 
 return {
+
 id: m.id,
+
 home: m.homeTeam.name,
+
 away: m.awayTeam.name,
+
 competition: m.competition.name,
+
 date: m.utcDate,
 
-exactScore: `${homeScore}-${awayScore}`,
+prediction: homeGoals>awayGoals
+? "Home Win"
+: awayGoals>homeGoals
+? "Away Win"
+: "Draw",
 
-confidence: Math.floor(Math.random()*25)+70,
+exactScore: `${homeGoals}-${awayGoals}`,
 
-btts: homeScore>0 && awayScore>0 ? "Yes" : "No",
+over25: total>2 ? "Over 2.5" : "Under 2.5",
 
-over25: total>2 ? "Over 2.5" : "Under 2.5"
+btts: homeGoals>0 && awayGoals>0 ? "Yes" : "No",
+
+confidence: confidence
+
 }
 
 })
 
-res.status(200).json(matches)
+res.status(200).json(strongMatches)
 
 }
