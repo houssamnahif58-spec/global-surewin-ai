@@ -1,34 +1,16 @@
-export default async function handler(req, res) {
-
-const response = await fetch("https://api.football-data.org/v4/matches", {
-headers: {
-"X-Auth-Token": process.env.API_KEY
-}
-})
-
-const data = await response.json()
-
-if(!data.matches){
-return res.status(200).json([])
-}
-
 const strongMatches = data.matches
 .filter(m => m.status === "TIMED")
 .slice(0,20)
 .map(m => {
 
-const attackHome = Math.random()*2.5
-const attackAway = Math.random()*2.5
+const seed = m.id
 
-const homeGoals = Math.round(attackHome)
-const awayGoals = Math.round(attackAway)
+const homeGoals = seed % 3
+const awayGoals = (seed * 2) % 3
 
 const total = homeGoals + awayGoals
 
-const confidence =
-Math.min(95,
-Math.round((attackHome+attackAway)*20)
-)
+const confidence = 70 + (seed % 25)
 
 return {
 
@@ -59,7 +41,3 @@ confidence: confidence
 }
 
 })
-
-res.status(200).json(strongMatches)
-
-}
