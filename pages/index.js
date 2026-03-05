@@ -1,40 +1,50 @@
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import {useEffect,useState} from "react"
 
-export default function Home() {
-  const [matches, setMatches] = useState([]);
+export default function Home(){
 
-  useEffect(() => {
-    fetch("/api/matches")
-      .then((res) => res.json())
-      .then((data) => setMatches(data));
-  }, []);
+const [matches,setMatches] = useState([])
 
-  return (
-    <div style={{ padding: 20, fontFamily: "Arial" }}>
-      <h1>⚽ SureWin AI</h1>
+useEffect(()=>{
 
-      {matches.map((match) => (
-        <Link key={match.id} href={`/match/${match.id}`}>
-          <div
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 10,
-              padding: 15,
-              marginBottom: 15,
-              cursor: "pointer",
-              background: "#f9f9f9",
-            }}
-          >
-            <h3>
-              {match.home} vs {match.away}
-            </h3>
-            <p>🏆 {match.competition}</p>
-            <p>📅 {new Date(match.date).toLocaleString()}</p>
-            <p>📊 Status: {match.status}</p>
-          </div>
-        </Link>
-      ))}
-    </div>
-  );
+fetch("/api/matches")
+.then(res=>res.json())
+.then(data=>setMatches(data))
+
+},[])
+
+return(
+
+<div style={{padding:"20px",fontFamily:"Arial"}}>
+
+<h1>🔥 Top Exact Score Predictions</h1>
+
+{matches.map(m=>(
+
+<div key={m.id} style={{
+border:"1px solid #ddd",
+padding:"15px",
+marginBottom:"15px",
+borderRadius:"10px"
+}}>
+
+<h2>{m.home} vs {m.away}</h2>
+
+<p>🏆 {m.competition}</p>
+
+<p>🎯 Exact Score: {m.exactScore}</p>
+
+<p>⭐ Confidence: {m.confidence}%</p>
+
+<p>⚽ BTTS: {m.btts}</p>
+
+<p>📊 {m.over25}</p>
+
+</div>
+
+))}
+
+</div>
+
+)
+
 }
