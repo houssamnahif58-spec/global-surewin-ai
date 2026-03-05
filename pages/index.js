@@ -1,32 +1,30 @@
 import Link from "next/link"
 
-export default function Home() {
+export default function Home(){
 
-  return (
+return(
 
-    <div style={{textAlign:"center",padding:"40px",fontFamily:"Arial"}}>
+<div style={{fontFamily:"Arial",padding:"30px"}}>
 
-      <h1>🔥 SUPER AI Football Predictions</h1>
+<h1>⚽ SUPER AI Predictions</h1>
+<p>Best Football Predictions In The World</p>
 
-      <p>Best Exact Score Predictions From AI</p>
+<br/>
 
-      <br/>
+<Link href="/matches">
+<button style={{
+padding:"15px",
+fontSize:"18px",
+background:"black",
+color:"white",
+borderRadius:"10px"
+}}>
+View Today's Predictions
+</button>
+</Link>
 
-      <Link href="/match">
-        <button style={{
-          padding:"15px 30px",
-          fontSize:"18px",
-          background:"black",
-          color:"white",
-          borderRadius:"10px",
-          border:"none"
-        }}>
-          View Predictions
-        </button>
-      </Link>
+</div>
 
-    </div>
-
-  )
+)
 
 }
