@@ -1,27 +1,55 @@
-import Link from "next/link"
+import { useEffect, useState } from "react"
 
-export default function Home(){
+export default function Home() {
+
+const [matches,setMatches] = useState([])
+
+useEffect(()=>{
+
+async function load(){
+
+const res = await fetch("/api/matches")
+const data = await res.json()
+
+setMatches(data)
+
+}
+
+load()
+
+},[])
 
 return(
 
-<div style={{fontFamily:"Arial",padding:"30px"}}>
+<div style={{fontFamily:"Arial",padding:"20px"}}>
 
-<h1>⚽ SUPER AI Predictions</h1>
-<p>Best Football Predictions In The World</p>
+<h1>⚽ AI Football Predictions</h1>
+<h3>Top Matches Today</h3>
 
-<br/>
+{matches.map((m,i)=>(
 
-<Link href="/matches">
-<button style={{
-padding:"15px",
-fontSize:"18px",
-background:"black",
-color:"white",
+<div key={i} style={{
+border:"1px solid #ddd",
+padding:"20px",
+marginTop:"15px",
 borderRadius:"10px"
 }}>
-View Today's Predictions
-</button>
-</Link>
+
+<h2>{m.home} VS {m.away}</h2>
+
+<p>🏆 League: {m.league}</p>
+
+<p>🎯 Exact Score: {m.score}</p>
+
+<p>⚽ BTTS: {m.btts}</p>
+
+<p>📊 Over/Under 2.5: {m.over}</p>
+
+<p>⭐ Confidence: {m.confidence}%</p>
+
+</div>
+
+))}
 
 </div>
 
