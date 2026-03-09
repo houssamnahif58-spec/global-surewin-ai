@@ -1,47 +1,47 @@
-import { useEffect, useState } from "react"
+import {useEffect,useState} from "react"
 
 export default function Matches(){
 
-const [matches,setMatches] = useState([])
+const [matches,setMatches]=useState([])
 
 useEffect(()=>{
 
-async function load(){
-
-const res = await fetch("/api/matches")
-const data = await res.json()
-
-setMatches(data)
-
-}
-
-load()
+fetch("/api/matches")
+.then(res=>res.json())
+.then(data=>{
+setMatches(data.all)
+})
 
 },[])
 
 return(
 
-<div style={{padding:"30px",fontFamily:"Arial"}}>
+<div style={{padding:40,fontFamily:"Arial"}}>
 
-<h1>🔥 Today's Best Predictions</h1>
+<h1>All AI Predictions</h1>
 
 {matches.map((m,i)=>(
+
 <div key={i} style={{
-border:"1px solid #ddd",
-marginTop:"20px",
-padding:"20px",
-borderRadius:"10px"
+border:"1px solid #444",
+padding:20,
+marginBottom:10
 }}>
 
-<h2>{m.home} VS {m.away}</h2>
+<h3>{m.home} vs {m.away}</h3>
 
-<p>🏆 League: {m.league}</p>
+<p>Score Prediction: {m.prediction.score}</p>
 
-<p>🎯 Exact Score: {m.score}</p>
+<p>BTTS: {m.prediction.btts}</p>
 
-<p>📊 AI Confidence: {m.confidence}%</p>
+<p>Over/Under: {m.prediction.over}</p>
+
+<p>xG: {m.stats.xgHome} - {m.stats.xgAway}</p>
+
+<p>Confidence: {m.confidence}%</p>
 
 </div>
+
 ))}
 
 </div>
