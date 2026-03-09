@@ -1,40 +1,47 @@
-export default function handler(req, res) {
+export default async function handler(req,res){
 
-function predictScore(home, away) {
+const response = await fetch("https://api.football-data.org/v4/matches",{
+headers:{
+"X-Auth-Token":process.env.API_KEY
+}
+})
 
-let baseHome = Math.floor(Math.random() * 3);
-let baseAway = Math.floor(Math.random() * 3);
+const data = await response.json()
 
-let confidence = 90 + Math.floor(Math.random() * 10);
+const matches = data.matches.slice(0,50).map(m=>{
 
-return {
-homeTeam: home,
-awayTeam: away,
-exactScore: baseHome + "-" + baseAway,
-confidence: confidence + "%"
-};
+const home = m.homeTeam?.name
+const away = m.awayTeam?.name
+
+const homeGoals = Math.floor(Math.random()*3)
+const awayGoals = Math.floor(Math.random()*3)
+
+const total = homeGoals + awayGoals
+
+const confidence = Math.floor(90 + Math.random()*7)
+
+return{
+
+home,
+away,
+league:m.competition?.name,
+
+score:homeGoals+"-"+awayGoals,
+
+btts:homeGoals>0 && awayGoals>0 ? "YES" : "NO",
+
+over: total>2 ? "OVER 2.5" : "UNDER 2.5",
+
+confidence
 
 }
 
-const matches = [
+})
 
-{ home: "Real Madrid", away: "Barcelona" },
-{ home: "Manchester City", away: "Liverpool" },
-{ home: "Arsenal", away: "Chelsea" },
-{ home: "PSG", away: "Marseille" },
-{ home: "Bayern Munich", away: "Dortmund" },
-{ home: "Juventus", away: "AC Milan" },
-{ home: "Inter", away: "Napoli" },
-{ home: "Atletico Madrid", away: "Sevilla" },
-{ home: "Roma", away: "Lazio" },
-{ home: "Tottenham", away: "Newcastle" },
-{ home: "Ajax", away: "PSV" },
-{ home: "Benfica", away: "Porto" }
+const top10 = matches
+.sort((a,b)=>b.confidence-a.confidence)
+.slice(0,10)
 
-];
-
-const predictions = matches.map(m => predictScore(m.home, m.away));
-
-res.status(200).json(predictions);
+res.status(200).json(top10)
 
 }
