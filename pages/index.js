@@ -1,51 +1,50 @@
-import { useEffect, useState } from "react"
+import {useEffect,useState} from "react"
 
-export default function Home() {
+export default function Home(){
 
-const [matches,setMatches] = useState([])
+const [matches,setMatches]=useState([])
 
 useEffect(()=>{
 
-async function load(){
-
-const res = await fetch("/api/matches")
-const data = await res.json()
-
-setMatches(data)
-
-}
-
-load()
+fetch("/api/matches")
+.then(res=>res.json())
+.then(data=>{
+setMatches(data.top10)
+})
 
 },[])
 
 return(
 
-<div style={{fontFamily:"Arial",padding:"20px"}}>
+<div style={{padding:40,fontFamily:"Arial"}}>
 
 <h1>⚽ AI Football Predictions</h1>
-<h3>Top Matches Today</h3>
+<h2>Top 10 Matches (90-97%)</h2>
 
 {matches.map((m,i)=>(
 
 <div key={i} style={{
-border:"1px solid #ddd",
-padding:"20px",
-marginTop:"15px",
-borderRadius:"10px"
+border:"1px solid #333",
+padding:20,
+marginBottom:15,
+borderRadius:10
 }}>
 
-<h2>{m.home} VS {m.away}</h2>
+<h3>{m.home} vs {m.away}</h3>
 
-<p>🏆 League: {m.league}</p>
+<p>League: {m.league}</p>
 
-<p>🎯 Exact Score: {m.score}</p>
+<p>Exact Score: {m.prediction.score}</p>
 
-<p>⚽ BTTS: {m.btts}</p>
+<p>Over/Under: {m.prediction.over}</p>
 
-<p>📊 Over/Under 2.5: {m.over}</p>
+<p>BTTS: {m.prediction.btts}</p>
 
-<p>⭐ Confidence: {m.confidence}%</p>
+<p>xG: {m.stats.xgHome} - {m.stats.xgAway}</p>
+
+<p>Win Probability: {m.stats.winHome}</p>
+
+<p>Confidence: {m.confidence}%</p>
 
 </div>
 
